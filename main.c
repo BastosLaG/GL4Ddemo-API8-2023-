@@ -8,6 +8,8 @@ static void init(void);
 static void sortie(void);
 static void resize(int w, int h);
 
+
+
 /*!\brief dimensions initiales de la fenêtre */
 static GLfloat _dim[] = {1024, 768};
 
