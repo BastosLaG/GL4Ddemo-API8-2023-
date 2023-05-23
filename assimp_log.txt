@@ -14,7 +14,7 @@ Info,  T0: JoinVerticesProcess finished | Verts in: 33140 out: 8401 | ~74.65
 Error, T0: This algorithm works on triangle meshes only
 Info,  T0: Cache relevant are 1 meshes (16670 faces). Average output ACMR is 0.730534
 Info,  T0: Leaving post processing pipeline
-tube update-2016.mtl
+ update-2016.mtl
 Info,  T0: OBJ: Opening fallback material file texture/bath.mtl
 Info,  T0: Entering post processing pipeline
 Info,  T0: RemoveRedundantMatsProcess finished. Removed 6 redundant and 1 unused materials.

@@ -20,7 +20,10 @@ static GL4DHanime _animations[] = {
   { 6500, p1, NULL, NULL },
   { 6500, p2, NULL, NULL },
   { 12500, td, NULL, NULL },
-  { 13000, vd, NULL, NULL },
+  { 12500, vd, NULL, NULL },
+  { 12500, td, NULL, NULL },
+  { 12500, vg, NULL, NULL },
+  { 12500, pd, NULL, NULL },
   {    0, NULL, NULL, NULL } /* Toujours laisser à la fin */
 };
 

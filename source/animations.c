@@ -45,6 +45,8 @@ static GLfloat _atemp = 0.0f;
 
 void Roaddraw(float anim_z);
 void podiumDraw(void);
+void gestion_voiture(void);
+void gestion_model2(void);
 
 
 static double get_dt(void) {
@@ -54,35 +56,14 @@ static double get_dt(void) {
 	return dt;
 }
 
-void gestion_voiture(void){
-  glUseProgram(_pIdmodel3d);
-  gl4duBindMatrix("modelCar");
-  gl4duLoadIdentityf();
-  gl4duTranslatef(_PositionCube1[0], _PositionCube1[1], _PositionCube1[2]);
-  gl4duRotatef(180, 0, 0.1, 0);
-  gl4duScalef(7.5f,7.5f,7.5f);
-}
-
-void gestion_model2(void){
-  glUseProgram(_pIdmodel3d);
-  gl4duBindMatrix("modelCar");
-  gl4duLoadIdentityf();
-  gl4duTranslatef(_PositionCube2[0], _PositionCube2[1], _PositionCube2[2]);
-  gl4duRotatef(90, 0, 0.1, 0);
-  gl4duScalef(5.0f,5.0f,5.0f);
-}
-
-
 void p1(int state) {
   /* INITIALISEZ VOS VARIABLES */
   static GLfloat a;
-  static GLfloat b;
   /* ... */
   switch(state) {
     case GL4DH_INIT:
       /* INITIALISEZ VOTRE ANIMATION (SES VARIABLES <STATIC>s) */
       a = 0.0f;
-      b = 2.0f;
       
     return;
     case GL4DH_FREE:
@@ -95,18 +76,9 @@ void p1(int state) {
       /* JOUER L'ANIMATION */
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
-    
-
     gestion_voiture();
     assimpDrawScene(_model1);
-    gl4duSendMatrices();
-
-    gestion_model2();
-    assimpDrawScene(_model2);
-    gl4duSendMatrices();
-    
-
-    Roaddraw(b);
+    gl4duRotatef(180.0f, 0, 0.1, 0);
     gl4duSendMatrices();
 
     // On s'addresse a la view
@@ -119,8 +91,7 @@ void p1(int state) {
     //avant le draw modification de la matrice en question 
     glUseProgram(0);
     a += 2.0f * M_PI * get_dt();
-    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-    _atemp = a;
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     return;
   }
 }
@@ -128,13 +99,11 @@ void p1(int state) {
 void p2(int state) {
   /* INITIALISEZ VOS VARIABLES */
   static GLfloat a;
-  static GLfloat b;
   /* ... */
   switch(state) {
     case GL4DH_INIT:
       /* INITIALISEZ VOTRE ANIMATION (SES VARIABLES <STATIC>s) */
       a = 0.0f;
-      b = 2.0f;
       glUniform1f(glGetUniformLocation(_pId, "weight"), 1.1f);
       glUniform1f(glGetUniformLocation(_pId2, "weight"), 1.1f);
     return;
@@ -147,20 +116,10 @@ void p2(int state) {
     default: /* GL4DH_DRAW */
       /* JOUER L'ANIMATION */
       a += 2.0f * M_PI * get_dt();
-      _atemp = a;
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-      
-      
-      gestion_voiture();
-      assimpDrawScene(_model1);
-      gl4duSendMatrices();
 
       gestion_model2();
       assimpDrawScene(_model2);
-      gl4duSendMatrices();
-
-      Roaddraw(b);
       gl4duSendMatrices();
 
       gl4duBindMatrix("projectionView");
@@ -171,7 +130,7 @@ void p2(int state) {
       gl4duSendMatrices();
       //avant le draw modification de la matrice en question 
       glUseProgram(0);
-      glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+      glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
       return;
   }
 }
@@ -182,15 +141,11 @@ void td(int state){
   /* INITIALISEZ VOS VARIABLES */
   static GLfloat a;
   static GLfloat b;
-  static GLfloat clampedA;
-  static GLfloat clampedB;
   /* ... */
   switch(state) {
     case GL4DH_INIT:
       /* INITIALISEZ VOTRE ANIMATION (SES VARIABLES <STATIC>s) */
       a = 0.0f;
-      clampedA = 0.0f;
-      clampedB = 0.0f;
       b = 0.0f;
     return;
     case GL4DH_FREE:
@@ -207,17 +162,13 @@ void td(int state){
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       
       gestion_voiture();
-      clampedA = cos(a*0.05) < -0.1f ? -0.1 : cos(a*0.05);
-      clampedB = clampedA > 0.1f ? 0.1 : clampedA; 
-      gl4duTranslatef(clampedB, 0.0f, cos(a*0.2));
+      gl4duTranslatef(0.0f, 0.0f, cos(a*0.2)/2);
       assimpDrawScene(_model1);
       gl4duSendMatrices();
 
       
       gestion_model2();
-      clampedA = sin(a*0.1) < -0.1f ? -0.1 : sin(a*0.1);
-      clampedB = clampedA > 0.1f ? 0.1 : clampedA; 
-      gl4duTranslatef(sin(a*0.2), 0.0f, clampedB);
+      gl4duTranslatef(sin(a*0.2)/2, 0.0f, 0.0f);
       assimpDrawScene(_model2);
       gl4duSendMatrices();
 
@@ -242,8 +193,6 @@ void td(int state){
 void vd(int state){
   /* INITIALISEZ VOS VARIABLES */
   static GLfloat a;
-  static GLfloat clampedA;
-  static GLfloat clampedB;
   static GLfloat b;
   /* ... */
   switch(state) {
@@ -251,8 +200,6 @@ void vd(int state){
       /* INITIALISEZ VOTRE ANIMATION (SES VARIABLES <STATIC>s) */
       a = 0.0f;
       b = 0.0f;
-      clampedA = 0.0f;
-      clampedB = 0.0f;
     return;
     case GL4DH_FREE:
       /* LIBERER LA MEMOIRE UTILISEE PAR LES <STATIC>s */
@@ -267,19 +214,14 @@ void vd(int state){
     _atemp = a;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    
-
     gestion_voiture();
-    clampedA = cos(a*0.05) < -0.1f ? -0.1 : cos(a*0.05);
-    clampedB = clampedA > 0.1f ? 0.1 : clampedA; 
-    gl4duTranslatef(clampedB, 0.0f, cos(a*0.2));
+    gl4duTranslatef(0.0f, 0.0f, cos(a*0.2)/2);
+    gl4duRotatef(40.0f + (sin(a*0.5)*2), 0.0f, 0.1f, 0.0f);
     assimpDrawScene(_model1);
     gl4duSendMatrices();
 
     gestion_model2();
-    clampedA = sin(a*0.1) < -0.1f ? -0.1 : sin(a*0.1);
-    clampedB = clampedA > 0.1f ? 0.1 : clampedA; 
-    gl4duTranslatef(sin(a*0.2), 0.0f, clampedB);
+    gl4duTranslatef(sin(a*0.2)/2, 0.0f, 0.0f);
     gl4duRotatef(40.0f + (sin(a*0.5)*2), 0.0f, 0.1f, 0.0f);
     assimpDrawScene(_model2);
     gl4duSendMatrices();
@@ -291,7 +233,7 @@ void vd(int state){
     gl4duLoadIdentityf();
     // (-2.0, 2.0, -1.0, 1.0, 1.0, 10.0)
     gl4duFrustumf(-1.0f, 1.0f, (-1.0f * _dim[1]) / _dim[0], (1.0f * _dim[1]) / _dim[0], 3.0f, 1000.0f);
-    gl4duLookAtf((5.0f * sin(a*0.1)) + 15.0f, 4.0f, 5.0f , _PositionCube2[0]/2, _PositionCube2[1], _PositionCube2[2], 0.0f, 1.0f, 0.0f);
+    gl4duLookAtf((5.0f * sin(a*0.1)) - 15.0f, 4.0f, 5.0f , _PositionCube2[0]/2, _PositionCube2[1], _PositionCube2[2], 0.0f, 1.0f, 0.0f);
 
     //envoie la matrice au gpu
     gl4duSendMatrices();
@@ -307,15 +249,11 @@ void vd(int state){
 void vg(int state){
   /* INITIALISEZ VOS VARIABLES */
   static GLfloat a;
-  static GLfloat clampedA;
-  static GLfloat clampedB;
   /* ... */
   switch(state) {
     case GL4DH_INIT:
       /* INITIALISEZ VOTRE ANIMATION (SES VARIABLES <STATIC>s) */
       a = 0.0f;
-      clampedA = 0.0f;
-      clampedB = 0.0f;
     return;
     case GL4DH_FREE:
       /* LIBERER LA MEMOIRE UTILISEE PAR LES <STATIC>s */
@@ -330,18 +268,14 @@ void vg(int state){
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     gestion_voiture();
-    clampedA = cos(a*0.05) < -0.1f ? -0.1 : cos(a*0.05);
-    clampedB = clampedA > 0.1f ? 0.1 : clampedA; 
-    gl4duTranslatef(clampedB, 0.0f, cos(a*0.2));
-    gl4duRotatef(40.0f + (cos(a*0.5)*2), 0.0f, 0.1f, 0.0f);
+    gl4duTranslatef(0.0f, 0.0f, cos(a*0.2)/2);
+    gl4duRotatef(-40.0f + (cos(a*0.5)*2), 0.0f, 0.1f, 0.0f);
     assimpDrawScene(_model1);
     gl4duSendMatrices();
 
     gestion_model2();
-    clampedA = sin(a*0.1) < -0.1f ? -0.1 : sin(a*0.1);
-    clampedB = clampedA > 0.1f ? 0.1 : clampedA; 
-    gl4duTranslatef(sin(a*0.2), 0.0f, clampedB);
-    gl4duRotatef(40.0f + (sin(a*0.5)*2), 0.0f, 0.1f, 0.0f);
+    gl4duTranslatef(sin(a*0.2)/2, 0.0f, 0.0f);
+    gl4duRotatef(-40.0f + (sin(a*0.5)*2), 0.0f, 0.1f, 0.0f);
     assimpDrawScene(_model2);
     gl4duSendMatrices();
 
@@ -351,7 +285,7 @@ void vg(int state){
     gl4duBindMatrix("projectionView");
     gl4duLoadIdentityf();
     gl4duFrustumf(-1.0f, 1.0f, (-1.0f * _dim[1]) / _dim[0], (1.0f * _dim[1]) / _dim[0], 1.0f, 1000.0f);
-    gl4duLookAtf((5.0f * sin(a*0.1)) - 15.0f, 4.0f, 5.0f , _PositionCube2[0]/2, _PositionCube2[1], _PositionCube2[2], 0.0f, 1.0f, 0.0f);
+    gl4duLookAtf((5.0f * sin(a*0.1)) + 15.0f, 4.0f, 0.0f , _PositionCube2[0]/2, _PositionCube2[1], _PositionCube2[2], 0.0f, 1.0f, 0.0f);
 
     //envoie la matrice au gpu
     gl4duSendMatrices();
@@ -361,6 +295,78 @@ void vg(int state){
     return;
   }
 }
+
+void pd(int state) {
+  /* INITIALISEZ VOS VARIABLES */
+  static GLfloat a;
+  /* ... */
+  switch(state) {
+    case GL4DH_INIT:
+      /* INITIALISEZ VOTRE ANIMATION (SES VARIABLES <STATIC>s) */
+      a = 0.0f;
+      
+    return;
+    case GL4DH_FREE:
+      /* LIBERER LA MEMOIRE UTILISEE PAR LES <STATIC>s */
+      return;
+    case GL4DH_UPDATE_WITH_AUDIO:
+      /* METTRE A JOUR VOTRE ANIMATION EN FONCTION DU SON */
+      return;
+    default: /* GL4DH_DRAW */
+      /* JOUER L'ANIMATION */
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    podiumDraw();
+
+    glUseProgram(_pIdmodel3d);
+    gl4duBindMatrix("modelCar");
+    gl4duLoadIdentityf();
+    gl4duScalef(3.0f, 3.0f, 3.0f);
+    gl4duTranslatef(0.0f, 1.0f, -3.0f);
+    assimpDrawScene(_model1);
+
+
+    glUseProgram(_pIdmodel3d);
+    gl4duBindMatrix("modelCar");
+    gl4duLoadIdentityf();
+    gl4duScalef(3.0f, 3.0f, 3.0f);
+    gl4duTranslatef(1.2f, 2.0f, -3.2f);
+    gl4duRotatef(-90, 0, 0.1, 0);
+    assimpDrawScene(_model2);
+
+    // On s'addresse a la view
+    gl4duBindMatrix("projectionView");
+    gl4duLoadIdentityf();
+    gl4duFrustumf(-1.0f, 1.0f, (-1.0f * _dim[1]) / _dim[0], (1.0f * _dim[1]) / _dim[0], 1.0f, 1000.0f);
+    gl4duLookAtf(2.0f, 8.0f, 0.0f, 2.5f, 4.0f, -5.0f, 0.0f, 1.0f, 0.0f);
+    gl4duSendMatrices();
+
+    //avant le draw modification de la matrice en question 
+    glUseProgram(0);
+    a += 2.0f * M_PI * get_dt();
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    return;
+  }
+}
+
+void gestion_voiture(void){
+  glUseProgram(_pIdmodel3d);
+  gl4duBindMatrix("modelCar");
+  gl4duLoadIdentityf();
+  gl4duTranslatef(_PositionCube1[0], _PositionCube1[1], _PositionCube1[2]);
+  gl4duRotatef(180, 0, 0.1, 0);
+  gl4duScalef(7.5f,7.5f,7.5f);
+}
+
+void gestion_model2(void){
+  glUseProgram(_pIdmodel3d);
+  gl4duBindMatrix("modelCar");
+  gl4duLoadIdentityf();
+  gl4duTranslatef(_PositionCube2[0], _PositionCube2[1], _PositionCube2[2]);
+  gl4duRotatef(90, 0, 0.1, 0);
+  gl4duScalef(5.0f,5.0f,5.0f);
+}
+
 
 void podiumDraw(void){
   GLfloat scale = 2.0f;
@@ -393,7 +399,7 @@ void Roaddraw(float anim_z) {
   gl4duBindMatrix("modelRoad");
   gl4duLoadIdentityf();
   gl4duTranslatef(1.5f, -1.001f, -1.0f);
-  gl4duScalef(5, 20, 1000);
+  gl4duScalef(10, 20, 1000);
   gl4duRotatef(90.0f, 1.0f, 0.0f, 0.0f);
   gl4duSendMatrices();
 
@@ -431,7 +437,7 @@ void Roaddraw(float anim_z) {
   // ligne du gauche
   gl4duLoadIdentityf();
   gl4duScalef(_scaleBordure[0], _scaleBordure[1], _scaleBordure[2]*3);
-  gl4duTranslatef(-25.0f, -10.0f, _scaleBordure[2]);
+  gl4duTranslatef(-60.0f, -10.0f, _scaleBordure[2]);
   gl4duRotatef(-90.0f, 0.1f, 0.0f,0.0f);
   gl4duSendMatrices();
   gl4duPopMatrix();
@@ -445,7 +451,7 @@ void Roaddraw(float anim_z) {
   // ligne de droite
   gl4duLoadIdentityf();
   gl4duScalef(_scaleBordure[0], _scaleBordure[1], _scaleBordure[2]*3);
-  gl4duTranslatef(55.0f, -10.0f, _scaleBordure[2]);
+  gl4duTranslatef(80.0f, -10.0f, _scaleBordure[2]);
   gl4duRotatef(-90.0f, 0.1f, 0.0f,0.0f);
   gl4duSendMatrices();
   for (int i = -10; i < 400; i++)
@@ -468,7 +474,7 @@ void animationsInit(void) {
   glUniform1i(glGetUniformLocation(_pIdmodel3d, "tex"), 0);
   glUniform4fv(glGetUniformLocation(_pIdmodel3d, "lumpos"), 1, lum);
 
-  _model1 = assimpGenScene("texture/Chevrolet_Camaro_SS_High.obj");
+  _model1 = assimpGenScene("texture/Chevrolet_Camaro_SS_Low.obj");
   _model2 = assimpGenScene("texture/bath.obj");
 
   if(!_cubeId)

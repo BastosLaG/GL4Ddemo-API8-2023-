@@ -30,7 +30,8 @@ extern "C" {
   extern void td(int state);
   extern void vd(int state);
   extern void vg(int state);
-  extern void Roaddraw(float anim_z);
+  extern void pd(int state);
+  // extern void Roaddraw(float anim_z);
   extern void animationsInit(void);
     
 #ifdef __cplusplus
