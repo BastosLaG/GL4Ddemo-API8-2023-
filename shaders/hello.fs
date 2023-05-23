@@ -3,5 +3,5 @@ in float il;
 out vec4 fragColor;
 
 void main() {
-     fragColor = il * vec4(0.0, 0.0, 0.5, 1.0);
+     fragColor = il * vec4(0.5, 0.5, 1, 1.0);
 }

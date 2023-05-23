@@ -44,6 +44,8 @@ static GLfloat lum[4] = {0.0, 10.0, 0.0, 1.0};
 static GLfloat _atemp = 0.0f;
 
 void Roaddraw(float anim_z);
+void podiumDraw(void);
+
 
 static double get_dt(void) {
 	static double t0 = 0.0f;
@@ -93,6 +95,8 @@ void p1(int state) {
       /* JOUER L'ANIMATION */
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
+    
+
     gestion_voiture();
     assimpDrawScene(_model1);
     gl4duSendMatrices();
@@ -145,6 +149,8 @@ void p2(int state) {
       a += 2.0f * M_PI * get_dt();
       _atemp = a;
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+      
       
       gestion_voiture();
       assimpDrawScene(_model1);
@@ -261,6 +267,8 @@ void vd(int state){
     _atemp = a;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    
+
     gestion_voiture();
     clampedA = cos(a*0.05) < -0.1f ? -0.1 : cos(a*0.05);
     clampedB = clampedA > 0.1f ? 0.1 : clampedA; 
@@ -354,6 +362,26 @@ void vg(int state){
   }
 }
 
+void podiumDraw(void){
+  GLfloat scale = 2.0f;
+
+  glUseProgram(_pId);
+  gl4duBindMatrix("modelCar");
+  gl4duLoadIdentityf();
+  gl4duScalef(scale, scale, scale);
+  gl4duTranslatef(0.0f, 0.0f, -5.0f);
+  gl4dgDraw(_cubeId);
+  gl4duSendMatrices();
+  gl4duTranslatef(scale*2, 0.0f, 0.0f);
+  gl4dgDraw(_cubeId);
+  gl4duSendMatrices();
+  gl4duTranslatef(-scale, 0.0f, 0.0f);
+  gl4dgDraw(_cubeId);
+  gl4duSendMatrices();
+  gl4duTranslatef(0.0f, scale-(scale/4), 0.0f);
+  gl4dgDraw(_cubeId);
+  gl4duSendMatrices();
+}
 
 void Roaddraw(float anim_z) {
   anim_z = (-anim_z);
