@@ -1,17 +1,3 @@
-/*!\file animations.c
- *
- * \brief Votre espace de liberté : c'est ici que vous pouvez ajouter
- * vos fonctions de transition et d'animation avant de les faire
- * référencées dans le tableau _animations du fichier \ref window.c
- *
- * Des squelettes d'animations et de transitions sont fournis pour
- * comprendre le fonctionnement de la bibliothèque. En bonus des
- * exemples dont un fondu en GLSL.
- *
- * \author Farès BELHADJ, amsi@up8.edu
- * \date April 12, 2023
- */
-
 #include "header/audioHelper.h"
 #include "header/assimp.h"
 #include <GL4D/gl4duw_SDL2.h>
@@ -21,19 +7,33 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 
 /*!\brief dimensions initiales de la fenêtre */
 static GLfloat _dim[] = {1024, 768};
-static GLuint _cubeId = 0;
+// static GLuint _cubeId = 0;
 static GLuint _roadId = 0;
 static GLuint _pId = 0;
 static GLuint _pId2 = 0;
 static GLuint _pId3 = 0;
 static GLuint _pId4 = 0;
 static GLuint _pIdmodel3d = 0;
+static GLuint _pIdTexte = 0;
 
+/// @brief voiture
 static GLuint _model1 = 0;
+/// @brief adversaire wtf 
 static GLuint _model2 = 0;
+/// @brief Panneau ou l'on peut écrire 
+static GLuint _quad = 0;
+/// @brief sert pour le podium
+static GLuint _cubeId = 0;
+
+/// @brief stocke le texte
+static GLuint _textId_1 = 0;
+static GLuint _textId_2 = 0;
+static GLuint _textId_VS = 0;
+static GLuint _textId_FINISH = 0;
 
 static GLfloat _PositionCube1[3] = {-1.0f, 0.0f, -5.5f};
 static GLfloat _PositionCube2[3] = {4.0f, 0.0f, -5.5f};
@@ -41,13 +41,13 @@ static GLfloat _scaleBordure[3] = {0.1f, 0.1f, 1.0f};
 
 static GLfloat lum[4] = {0.0, 10.0, 0.0, 1.0};
 
-static GLfloat _atemp = 0.0f;
-
 void Roaddraw(float anim_z);
 void podiumDraw(void);
 void gestion_voiture(void);
 void gestion_model2(void);
 
+static void initText(GLuint * ptId, const char * text);
+void PlayertextDraw(GLuint textId, GLfloat a, GLfloat Position[3]);
 
 static double get_dt(void) {
 	static double t0 = 0.0f;
@@ -68,6 +68,7 @@ void p1(int state) {
     return;
     case GL4DH_FREE:
       /* LIBERER LA MEMOIRE UTILISEE PAR LES <STATIC>s */
+      
       return;
     case GL4DH_UPDATE_WITH_AUDIO:
       /* METTRE A JOUR VOTRE ANIMATION EN FONCTION DU SON */
@@ -76,6 +77,8 @@ void p1(int state) {
       /* JOUER L'ANIMATION */
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
+    PlayertextDraw(_textId_1 ,a, _PositionCube1);
+
     gestion_voiture();
     assimpDrawScene(_model1);
     gl4duRotatef(180.0f, 0, 0.1, 0);
@@ -99,6 +102,7 @@ void p1(int state) {
 void p2(int state) {
   /* INITIALISEZ VOS VARIABLES */
   static GLfloat a;
+  
   /* ... */
   switch(state) {
     case GL4DH_INIT:
@@ -117,6 +121,7 @@ void p2(int state) {
       /* JOUER L'ANIMATION */
       a += 2.0f * M_PI * get_dt();
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      PlayertextDraw(_textId_2, a, _PositionCube2);
 
       gestion_model2();
       assimpDrawScene(_model2);
@@ -158,7 +163,6 @@ void td(int state){
       /* JOUER L'ANIMATION */
       a += 2.0f * M_PI * get_dt();
       b += 2.0f * M_PI * get_dt();
-      _atemp = a;
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       
       gestion_voiture();
@@ -211,7 +215,6 @@ void vd(int state){
       /* JOUER L'ANIMATION */
     a += 2.0f * M_PI * get_dt();
     b += 2.0f * M_PI * get_dt();
-    _atemp = a;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     gestion_voiture();
@@ -264,7 +267,6 @@ void vg(int state){
     default: /* GL4DH_DRAW */
       /* JOUER L'ANIMATION */
     a += 2.0f * M_PI * get_dt();
-    _atemp = a;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     gestion_voiture();
@@ -318,20 +320,12 @@ void pd(int state) {
     
     podiumDraw();
 
-    glUseProgram(_pIdmodel3d);
-    gl4duBindMatrix("modelCar");
-    gl4duLoadIdentityf();
-    gl4duScalef(3.0f, 3.0f, 3.0f);
-    gl4duTranslatef(0.0f, 1.0f, -3.0f);
+    gestion_voiture();
+    gl4duRotatef(-90, 0, 1, 0);
     assimpDrawScene(_model1);
 
-
-    glUseProgram(_pIdmodel3d);
-    gl4duBindMatrix("modelCar");
-    gl4duLoadIdentityf();
-    gl4duScalef(3.0f, 3.0f, 3.0f);
-    gl4duTranslatef(1.2f, 2.0f, -3.2f);
-    gl4duRotatef(-90, 0, 0.1, 0);
+    gestion_model2();
+    gl4duRotatef(-90, 0, 1, 0);
     assimpDrawScene(_model2);
 
     // On s'addresse a la view
@@ -366,7 +360,6 @@ void gestion_model2(void){
   gl4duRotatef(90, 0, 0.1, 0);
   gl4duScalef(5.0f,5.0f,5.0f);
 }
-
 
 void podiumDraw(void){
   GLfloat scale = 2.0f;
@@ -463,7 +456,82 @@ void Roaddraw(float anim_z) {
   }
 }
 
+void PlayertextDraw(GLuint textId, GLfloat a, GLfloat Position[3]){
+
+  glUseProgram(_pIdTexte);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, textId);
+  glUniform1i(glGetUniformLocation(_pIdTexte, "inv"), 1);
+  glUniform1i(glGetUniformLocation(_pIdTexte, "tex"), 0);
+  gl4duBindMatrix("modelCar");
+  gl4duLoadIdentityf();
+  gl4duTranslatef(Position[0], Position[1] + 2.5f, Position[2]);
+  if (Position[0] == 0.0f){
+    gl4duRotatef(90.0f, 0, 1, 0);
+  }
+  gl4dgDraw(_quad);
+  gl4duSendMatrices();
+
+	glEnable(GL_DEPTH_TEST);
+}
+
+static void initText(GLuint * ptId, const char * text) {
+  static int firstTime = 1;
+  SDL_Color c = {255, 255, 255, 255};
+  SDL_Surface * d, * s;
+  TTF_Font * font = NULL;
+  if(firstTime) {
+    /* initialisation de la bibliothèque SDL2 ttf */
+    if(TTF_Init() == -1) {
+      fprintf(stderr, "TTF_Init: %s\n", TTF_GetError());
+      exit(2);
+    }
+    firstTime = 0;
+  }
+  if(*ptId == 0) {
+    /* initialisation de la texture côté OpenGL */
+    glGenTextures(1, ptId);
+    glBindTexture(GL_TEXTURE_2D, *ptId);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  }
+  /* chargement de la font */
+  if( !(font = TTF_OpenFont("texture/DejaVuSans-Bold.ttf", 128)) ) {
+    fprintf(stderr, "TTF_OpenFont: %s\n", TTF_GetError());
+    return;
+  }
+  /* création d'une surface SDL avec le texte */
+  d = TTF_RenderUTF8_Blended_Wrapped(font, text, c, 2048);
+  if(d == NULL) {
+    TTF_CloseFont(font);
+    fprintf(stderr, "Erreur lors du TTF_RenderText\n");
+    return;
+  }
+  /* copie de la surface SDL vers une seconde aux spécifications qui correspondent au format OpenGL */
+  s = SDL_CreateRGBSurface(0, d->w, d->h, 32, R_MASK, G_MASK, B_MASK, A_MASK);
+  assert(s);
+  SDL_BlitSurface(d, NULL, s, NULL);
+  SDL_FreeSurface(d);
+  /* transfert vers la texture OpenGL */
+  glBindTexture(GL_TEXTURE_2D, *ptId);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, s->w, s->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, s->pixels);
+  // fprintf(stderr, "Dimensions de la texture : %d %d\n", s->w, s->h);
+  SDL_FreeSurface(s);
+  TTF_CloseFont(font);
+  glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 void animationsInit(void) {
+
+  _pIdTexte = gl4duCreateProgram("<vs>shaders/credits.vs", "<fs>shaders/credits.fs", NULL);
+  _quad = gl4dgGenQuadf();
+  initText(&_textId_1, "Player 1");
+  initText(&_textId_2, "Player 2");
+  initText(&_textId_1, "Player 1");
+  initText(&_textId_1, "Player 1");
+
   _pId = gl4duCreateProgram("<vs>shaders/player.vs", "<fs>shaders/hello.fs", NULL);
   _pId2 = gl4duCreateProgram("<vs>shaders/player.vs", "<fs>shaders/player.fs", NULL);
   _pId3 = gl4duCreateProgram("<vs>shaders/road.vs", "<fs>shaders/road.fs", NULL);
