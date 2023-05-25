@@ -27,6 +27,7 @@ extern "C" {
   extern void fondu1(void (* a0)(int), void (* a1)(int), Uint32 t, Uint32 et, int state);
   extern void p1(int state);
   extern void p2(int state);
+  extern void vs(int state);
   extern void td(int state);
   extern void vd(int state);
   extern void vg(int state);

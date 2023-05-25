@@ -113,6 +113,7 @@ void p2(int state) {
     return;
     case GL4DH_FREE:
       /* LIBERER LA MEMOIRE UTILISEE PAR LES <STATIC>s */
+
       return;
     case GL4DH_UPDATE_WITH_AUDIO:
       /* METTRE A JOUR VOTRE ANIMATION EN FONCTION DU SON */
@@ -137,6 +138,53 @@ void p2(int state) {
       glUseProgram(0);
       glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
       return;
+  }
+}
+
+void vs(int state) {
+  /* INITIALISEZ VOS VARIABLES */
+  static GLfloat a;
+  /* ... */
+  switch(state) {
+    case GL4DH_INIT:
+      /* INITIALISEZ VOTRE ANIMATION (SES VARIABLES <STATIC>s) */
+      a = 0.0f;
+    return;
+    case GL4DH_FREE:
+      /* LIBERER LA MEMOIRE UTILISEE PAR LES <STATIC>s */
+      return;
+    case GL4DH_UPDATE_WITH_AUDIO:
+      /* METTRE A JOUR VOTRE ANIMATION EN FONCTION DU SON */
+      return;
+    default: /* GL4DH_DRAW */
+      /* JOUER L'ANIMATION */
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    glUseProgram(_pIdTexte);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, _textId_VS);
+    glUniform1i(glGetUniformLocation(_pIdTexte, "inv"), 1);
+    glUniform1i(glGetUniformLocation(_pIdTexte, "tex"), 0);
+    gl4duBindMatrix("modelCar");
+    gl4duLoadIdentityf();
+    gl4duTranslatef(0.0f, 0.0f, -5.0f);
+    gl4dgDraw(_quad);
+    gl4duSendMatrices();
+
+	glEnable(GL_DEPTH_TEST);
+
+    // On s'addresse a la view
+    gl4duBindMatrix("projectionView");
+    gl4duLoadIdentityf();
+    gl4duFrustumf(-1.0f, 1.0f, (-1.0f * _dim[1]) / _dim[0], (1.0f * _dim[1]) / _dim[0], 1.0f, 1000.0f);
+    gl4duLookAtf(0.0f, 0.0f, 5.0f, 0.0f, 0.0f, -5.0f, 0.0f, 1.0f, 0.0f);
+    gl4duSendMatrices();
+
+    //avant le draw modification de la matrice en question 
+    glUseProgram(0);
+    a += 2.0f * M_PI * get_dt();
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    return;
   }
 }
 
@@ -466,8 +514,8 @@ void PlayertextDraw(GLuint textId, GLfloat a, GLfloat Position[3]){
   gl4duBindMatrix("modelCar");
   gl4duLoadIdentityf();
   gl4duTranslatef(Position[0], Position[1] + 2.5f, Position[2]);
-  if (Position[0] == 0.0f){
-    gl4duRotatef(90.0f, 0, 1, 0);
+  if (textId == _textId_2){
+    gl4duRotatef(180.0f, 0, 1, 0);
   }
   gl4dgDraw(_quad);
   gl4duSendMatrices();
@@ -529,8 +577,8 @@ void animationsInit(void) {
   _quad = gl4dgGenQuadf();
   initText(&_textId_1, "Player 1");
   initText(&_textId_2, "Player 2");
-  initText(&_textId_1, "Player 1");
-  initText(&_textId_1, "Player 1");
+  initText(&_textId_VS, "Versus");
+  initText(&_textId_FINISH, "FINISH");
 
   _pId = gl4duCreateProgram("<vs>shaders/player.vs", "<fs>shaders/hello.fs", NULL);
   _pId2 = gl4duCreateProgram("<vs>shaders/player.vs", "<fs>shaders/player.fs", NULL);
