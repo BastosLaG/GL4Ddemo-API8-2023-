@@ -19,6 +19,7 @@
 #include "assimp.h"
 #include <SDL_ttf.h>
 #include <SDL_image.h>
+#include <fftw3.h>
 
 #ifdef __cplusplus
 extern "C" {

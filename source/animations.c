@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <fftw3.h>
 
 /*!\brief dimensions initiales de la fenêtre */
 static GLfloat _dim[] = {1024, 768};
