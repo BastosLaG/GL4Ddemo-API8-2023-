@@ -12,7 +12,6 @@
 /*!\brief dimensions initiales de la fenêtre */
 static GLfloat _dim[] = {1024, 768};
 // static GLuint _cubeId = 0;
-static GLuint _roadId = 0;
 static GLuint _pId = 0;
 static GLuint _pId2 = 0;
 static GLuint _pId3 = 0;
@@ -28,6 +27,13 @@ static GLuint _model2 = 0;
 static GLuint _quad = 0;
 /// @brief sert pour le podium
 static GLuint _cubeId = 0;
+/// @brief route
+static GLuint _roadId = 0;
+/// @brief ligne de depart
+static GLuint _depId = 0;
+/// @brief pilone bord de route
+static GLuint _pilo = 0;
+
 
 /// @brief stocke le texte
 static GLuint _textId_1 = 0;
@@ -41,6 +47,7 @@ static GLfloat _scaleBordure[3] = {0.1f, 0.1f, 1.0f};
 
 static GLfloat lum[4] = {0.0, 10.0, 0.0, 1.0};
 
+void DepArr(float z);
 void Roaddraw(float anim_z);
 void podiumDraw(void);
 void gestion_voiture(void);
@@ -49,12 +56,16 @@ void gestion_model2(void);
 static void initText(GLuint * ptId, const char * text);
 void PlayertextDraw(GLuint textId, GLfloat a, GLfloat Position[3]);
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 static double get_dt(void) {
 	static double t0 = 0.0f;
 	double t = gl4dGetElapsedTime(), dt = (t - t0) / 1000.0;
 	t0 = t;
 	return dt;
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void p1(int state) {
   /* INITIALISEZ VOS VARIABLES */
@@ -99,6 +110,8 @@ void p1(int state) {
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void p2(int state) {
   /* INITIALISEZ VOS VARIABLES */
   static GLfloat a;
@@ -140,6 +153,8 @@ void p2(int state) {
       return;
   }
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void vs(int state) {
   /* INITIALISEZ VOS VARIABLES */
@@ -187,6 +202,59 @@ void vs(int state) {
     return;
   }
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/// @brief / td pour tout droit animation prévue pour le ligne droite
+/// @param state 
+void dp(int state){
+  /* INITIALISEZ VOS VARIABLES */
+  static GLfloat a;
+  /* ... */
+  switch(state) {
+    case GL4DH_INIT:
+      /* INITIALISEZ VOTRE ANIMATION (SES VARIABLES <STATIC>s) */
+      a = 0.0f;
+    return;
+    case GL4DH_FREE:
+      /* LIBERER LA MEMOIRE UTILISEE PAR LES <STATIC>s */
+      return;
+    case GL4DH_UPDATE_WITH_AUDIO:
+      /* METTRE A JOUR VOTRE ANIMATION EN FONCTION DU SON */
+      return;
+    default: /* GL4DH_DRAW */
+      a += 2.0f * M_PI * get_dt();
+      /* JOUER L'ANIMATION */
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      
+      gestion_voiture();
+      assimpDrawScene(_model1);
+      gl4duSendMatrices();
+      
+      gestion_model2();
+      assimpDrawScene(_model2);
+      gl4duSendMatrices();
+
+      DepArr(0.0f);
+      gl4duSendMatrices();
+
+      Roaddraw(0.0f);
+      gl4duSendMatrices();
+
+      gl4duBindMatrix("projectionView");
+      gl4duLoadIdentityf();
+      gl4duFrustumf(-1.0f, 1.0f, (-1.0f * _dim[1]) / _dim[0], (1.0f * _dim[1]) / _dim[0], 1.0f, 1000.0f);
+      gl4duLookAtf(0, 4.0f, 5.0f , _PositionCube2[0]/2, _PositionCube2[1], _PositionCube2[2], 0.0f, 1.0f, 0.0f);
+      gl4duSendMatrices();
+
+      //avant le draw modification de la matrice en question 
+      glUseProgram(0);
+      glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+      return;
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /// @brief / td pour tout droit animation prévue pour le ligne droite
 /// @param state 
@@ -239,6 +307,8 @@ void td(int state){
       return;
   }
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /// @brief / vd pour virage droite animation prévue pour le ligne droite
 /// @param state 
@@ -295,6 +365,8 @@ void vd(int state){
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /// @brief / vd pour virage droite animation prévue pour le ligne droite
 /// @param state 
 void vg(int state){
@@ -346,6 +418,8 @@ void vg(int state){
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void pd(int state) {
   /* INITIALISEZ VOS VARIABLES */
   static GLfloat a;
@@ -391,6 +465,8 @@ void pd(int state) {
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void gestion_voiture(void){
   glUseProgram(_pIdmodel3d);
   gl4duBindMatrix("modelCar");
@@ -400,6 +476,7 @@ void gestion_voiture(void){
   gl4duScalef(7.5f,7.5f,7.5f);
 }
 
+
 void gestion_model2(void){
   glUseProgram(_pIdmodel3d);
   gl4duBindMatrix("modelCar");
@@ -408,6 +485,8 @@ void gestion_model2(void){
   gl4duRotatef(90, 0, 0.1, 0);
   gl4duScalef(5.0f,5.0f,5.0f);
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void podiumDraw(void){
   GLfloat scale = 2.0f;
@@ -429,6 +508,8 @@ void podiumDraw(void){
   gl4dgDraw(_cubeId);
   gl4duSendMatrices();
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Roaddraw(float anim_z) {
   anim_z = (-anim_z);
@@ -504,6 +585,98 @@ void Roaddraw(float anim_z) {
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void DepArr(float z){
+
+  glUseProgram(_pId);
+  gl4duBindMatrix("modelCar");
+  gl4duLoadIdentityf();
+  gl4duTranslatef(-10.0f + 1.5f, 0.0f, -13.0f + z);
+  gl4duSendMatrices();
+  gl4dgDraw(_pilo);
+  gl4duTranslatef(0.0f, 2.0f, 0.0f);
+  gl4duSendMatrices();
+  gl4dgDraw(_pilo);
+  gl4duTranslatef(0.0f, 2.0f, 0.0f);
+  gl4duSendMatrices();
+  gl4dgDraw(_pilo);
+  gl4duTranslatef(0.0f, 1.0f, 0.0f);
+  gl4duSendMatrices();
+  gl4dgDraw(_pilo);
+
+  gl4duBindMatrix("modelCar");
+  gl4duLoadIdentityf();
+  gl4duTranslatef(10.0f + 1.5f, 0.0f, -13.0f + z);
+  gl4duSendMatrices();
+  gl4dgDraw(_pilo);
+  gl4duTranslatef(0.0f, 2.0f, 0.0f);
+  gl4duSendMatrices();
+  gl4dgDraw(_pilo);
+  gl4duTranslatef(0.0f, 2.0f, 0.0f);
+  gl4duSendMatrices();
+  gl4dgDraw(_pilo);
+  gl4duTranslatef(0.0f, 1.0f, 0.0f);
+  gl4duSendMatrices();
+  gl4dgDraw(_pilo);
+
+  glUseProgram(_pId4);
+  SDL_Surface* image = IMG_Load("images/grille.jpg");
+  SDL_Surface* surface = SDL_CreateRGBSurface(0, image->w, image->h, 32, R_MASK, G_MASK, B_MASK, A_MASK);
+
+  gl4duBindMatrix("modelRoad");
+  gl4duLoadIdentityf();
+  gl4duTranslatef(1.5f, -0.9999f, -13.0f + z);
+  gl4duScalef(10, 2, 2);
+  gl4duRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+  gl4duSendMatrices();
+
+  SDL_BlitSurface(image, NULL, surface, NULL);
+  SDL_FreeSurface(image);
+
+  GLuint _tex_id;
+  glGenTextures(1, &_tex_id);
+  glBindTexture(GL_TEXTURE_2D, _tex_id);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface->w, surface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
+  SDL_FreeSurface(surface);
+  glEnable(GL_TEXTURE_2D);
+  glEnable(GL_DEPTH_TEST);
+  
+  gl4dgDraw(_depId);
+  glBindTexture(GL_TEXTURE_2D, _tex_id);
+
+  gl4duBindMatrix("modelRoad");
+  gl4duLoadIdentityf();
+  gl4duTranslatef(1.5f, 5.0f, -13.0f + z);
+  gl4duScalef(10, 1, 1);
+  gl4duSendMatrices();
+
+  gl4dgDraw(_depId);
+  glBindTexture(GL_TEXTURE_2D, _tex_id);
+
+  glUseProgram(_pIdTexte);
+  gl4duBindMatrix("modelRoad");
+  gl4duLoadIdentityf();
+
+  glUseProgram(_pIdTexte);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, _textId_FINISH);
+  glUniform1i(glGetUniformLocation(_pIdTexte, "inv"), 1);
+  glUniform1i(glGetUniformLocation(_pIdTexte, "tex"), 0);
+  gl4duBindMatrix("modelCar");
+  gl4duLoadIdentityf();
+  gl4duTranslatef(1.5f, 5.0f, -12.9f + z);
+  gl4duScalef(3.0f, 1.0f, 1.0f);
+  gl4dgDraw(_quad);
+  gl4duSendMatrices();
+	glEnable(GL_DEPTH_TEST);
+
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void PlayertextDraw(GLuint textId, GLfloat a, GLfloat Position[3]){
 
   glUseProgram(_pIdTexte);
@@ -522,6 +695,8 @@ void PlayertextDraw(GLuint textId, GLfloat a, GLfloat Position[3]){
 
 	glEnable(GL_DEPTH_TEST);
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 static void initText(GLuint * ptId, const char * text) {
   static int firstTime = 1;
@@ -571,19 +746,19 @@ static void initText(GLuint * ptId, const char * text) {
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void animationsInit(void) {
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  _pIdTexte = gl4duCreateProgram("<vs>shaders/credits.vs", "<fs>shaders/credits.fs", NULL);
-  _quad = gl4dgGenQuadf();
+void animationsInit(void) {
   initText(&_textId_1, "Player 1");
   initText(&_textId_2, "Player 2");
-  initText(&_textId_VS, "Versus");
-  initText(&_textId_FINISH, "FINISH");
+  initText(&_textId_VS, "Vs");
+  initText(&_textId_FINISH, " DEPART ");
 
   _pId = gl4duCreateProgram("<vs>shaders/player.vs", "<fs>shaders/hello.fs", NULL);
   _pId2 = gl4duCreateProgram("<vs>shaders/player.vs", "<fs>shaders/player.fs", NULL);
   _pId3 = gl4duCreateProgram("<vs>shaders/road.vs", "<fs>shaders/road.fs", NULL);
   _pId4 = gl4duCreateProgram("<vs>shaders/roadsol.vs", "<fs>shaders/roadsol.fs", NULL);
+  _pIdTexte = gl4duCreateProgram("<vs>shaders/credits.vs", "<fs>shaders/credits.fs", NULL);
   _pIdmodel3d = gl4duCreateProgram("<vs>shaders/model.vs", "<fs>shaders/model.fs", NULL);
 
   glUseProgram(_pIdmodel3d);
@@ -597,4 +772,10 @@ void animationsInit(void) {
     _cubeId = gl4dgGenCubef();
   if(!_roadId)
     _roadId = gl4dgGenQuadf();
+  if(!_depId)
+    _depId = gl4dgGenQuadf();
+  if(!_quad)
+    _quad = gl4dgGenQuadf();
+  if (!_pilo)
+  _pilo = gl4dgGenCylinderf(8, GL_TRUE);
 }
