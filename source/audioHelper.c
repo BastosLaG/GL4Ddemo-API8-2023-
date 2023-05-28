@@ -74,7 +74,7 @@ void ahInitAudio(const char * file) {
   Mix_SetPostMix(mixCallback, NULL);
   if(!Mix_PlayingMusic()){
     //gere le volume de la musique 
-    Mix_VolumeMusic(10);
+    Mix_VolumeMusic(128);
     Mix_PlayMusic(_mmusic, 1);
   } 
   gl4dhStartingSignal();

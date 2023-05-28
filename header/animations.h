@@ -25,18 +25,17 @@
 extern "C" {
 #endif
 
-  extern void fondu1(void (* a0)(int), void (* a1)(int), Uint32 t, Uint32 et, int state);
-  extern void p1(int state);
-  extern void p2(int state);
-  extern void vs(int state);
-  extern void dp1(int state);
-  extern void dp2(int state);
-  extern void td(int state);
-  extern void vd(int state);
-  extern void vg(int state);
-  extern void pd(int state);
-  extern void ar1(int state);
-  extern void ar2(int state);
+  // extern void fondu1(void (* a0)(int), void (* a1)(int), Uint32 t, Uint32 et, int state);
+  extern void player1(int state);
+  extern void player2(int state);
+  extern void versus(int state);
+  extern void depart1(int state);
+  extern void depart2(int state);
+  extern void toutdroit(int state);
+  extern void viraged(int state);
+  extern void virageg(int state);
+  extern void arrivee1(int state);
+  extern void arrivee2(int state);
   extern void animationsInit(void);
     
 #ifdef __cplusplus

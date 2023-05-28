@@ -17,18 +17,18 @@ static GLfloat _dim[] = {1024, 768};
  * ce tableau se termine toujours par l'élémént {0, NULL, NULL,
  * NULL} */
 static GL4DHanime _animations[] = {
-  { 4500, p1, NULL, NULL },
-  { 1500, vs, NULL, NULL },
-  { 4500, p2, NULL, NULL },
-  { 2000, dp1, NULL, NULL },
-  { 2000, dp2, NULL, NULL },
-  { 8000, td, NULL, NULL },
-  { 8000, vd, NULL, NULL },
-  { 6000, td, NULL, NULL },
-  { 8000, vg, NULL, NULL },
-  { 10000, ar1, NULL, NULL },
-  { 2000, ar2, NULL, NULL },
-  { 4500, p2, NULL, NULL },
+  { 4500, player1, NULL, NULL },
+  { 1500, versus, NULL, NULL },
+  { 4500, player2, NULL, NULL },
+  { 3000, depart1, NULL, NULL },
+  { 2000, depart2, NULL, NULL },
+  { 8000, toutdroit, NULL, NULL },
+  { 8000, viraged, NULL, NULL },
+  { 6000, toutdroit, NULL, NULL },
+  { 8000, virageg, NULL, NULL },
+  { 10000, arrivee1, NULL, NULL },
+  { 2000, arrivee2, NULL, NULL },
+  { 4500, player2, NULL, NULL },
   {    0, NULL, NULL, NULL } /* Toujours laisser à la fin */
 };
 
