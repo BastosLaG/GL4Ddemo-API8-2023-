@@ -23,3 +23,9 @@ include :
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <fftw3.h>
+
+Pour lancer le Programme dans un terminal linux entrer : 
+
+compilation avec -> make 
+
+execution avec -> ./demo

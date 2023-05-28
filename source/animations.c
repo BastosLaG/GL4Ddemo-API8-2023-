@@ -6,9 +6,11 @@
 #include <GL4D/gl4dh.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <fftw3.h>
+
 
 #define NB_E 1024
 
@@ -46,6 +48,7 @@ static GLuint _textId_1 = 0;
 static GLuint _textId_2 = 0;
 static GLuint _textId_VS = 0;
 static GLuint _textId_FINISH = 0;
+static GLuint _textId_WINNER = 0;
 
 static GLfloat _PositionCube1[3] = {-1.0f, 0.0f, -5.5f};
 static GLfloat _PositionCube2[3] = {4.0f, 0.0f, -5.5f};
@@ -61,6 +64,7 @@ void SpectredrawR();
 void podiumDraw(void);
 void gestion_voiture(void);
 void gestion_model2(void);
+void backgroundcolor(void);
 
 static void initText(GLuint * ptId, const char * text);
 void PlayertextDraw(GLuint textId, GLfloat a, GLfloat Position[3]);
@@ -84,11 +88,9 @@ void player1(int state) {
     case GL4DH_INIT:
       /* INITIALISEZ VOTRE ANIMATION (SES VARIABLES <STATIC>s) */
       a = 0.0f;
-      
     return;
     case GL4DH_FREE:
       /* LIBERER LA MEMOIRE UTILISEE PAR LES <STATIC>s */
-      
       return;
     case GL4DH_UPDATE_WITH_AUDIO:
       /* METTRE A JOUR VOTRE ANIMATION EN FONCTION DU SON */
@@ -114,7 +116,7 @@ void player1(int state) {
     //avant le draw modification de la matrice en question 
     glUseProgram(0);
     a += 2.0f * M_PI * get_dt();
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    backgroundcolor();
     return;
   }
 }
@@ -135,7 +137,6 @@ void player2(int state) {
     return;
     case GL4DH_FREE:
       /* LIBERER LA MEMOIRE UTILISEE PAR LES <STATIC>s */
-
       return;
     case GL4DH_UPDATE_WITH_AUDIO:
       /* METTRE A JOUR VOTRE ANIMATION EN FONCTION DU SON */
@@ -158,11 +159,47 @@ void player2(int state) {
       gl4duSendMatrices();
       //avant le draw modification de la matrice en question 
       glUseProgram(0);
-      glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+      backgroundcolor();
       return;
   }
 }
+void pd(int state) {
+  /* INITIALISEZ VOS VARIABLES */
+  static GLfloat a;
+  /* ... */
+  switch(state) {
+    case GL4DH_INIT:
+      /* INITIALISEZ VOTRE ANIMATION (SES VARIABLES <STATIC>s) */
+      a = 0.0f;
+    return;
+    case GL4DH_FREE:
+      /* LIBERER LA MEMOIRE UTILISEE PAR LES <STATIC>s */
+      return;
+    case GL4DH_UPDATE_WITH_AUDIO:
+      /* METTRE A JOUR VOTRE ANIMATION EN FONCTION DU SON */
+      return;
+    default: /* GL4DH_DRAW */
+      /* JOUER L'ANIMATION */
+      a += 2.0f * M_PI * get_dt();
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      PlayertextDraw(_textId_WINNER, a, _PositionCube2);
 
+      gestion_model2();
+      assimpDrawScene(_model2);
+      gl4duSendMatrices();
+
+      gl4duBindMatrix("projectionView");
+      gl4duLoadIdentityf();
+      
+      gl4duFrustumf(-1.0f, 1.0f, (-1.0f * _dim[1]) / _dim[0], (1.0f * _dim[1]) / _dim[0], 1.0f, 1000.0f);
+      gl4duLookAtf((5.0f * cos(a*0.1)) + _PositionCube2[0], 4.0f, (-5.0f * sin(a*0.1)) + _PositionCube2[2], _PositionCube2[0], _PositionCube2[1], _PositionCube2[2], 0.0f, 1.0f, 0.0f);
+      gl4duSendMatrices();
+      //avant le draw modification de la matrice en question 
+      glUseProgram(0);
+      backgroundcolor();
+      return;
+  }
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void versus(int state) {
@@ -207,7 +244,7 @@ void versus(int state) {
     //avant le draw modification de la matrice en question 
     glUseProgram(0);
     a += 2.0f * M_PI * get_dt();
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    backgroundcolor();
     return;
   }
 }
@@ -262,7 +299,7 @@ void depart1(int state){
 
       //avant le draw modification de la matrice en question 
       glUseProgram(0);
-      glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+      backgroundcolor();
       return;
   }
 }
@@ -316,7 +353,7 @@ void depart2(int state){
 
       //avant le draw modification de la matrice en question 
       glUseProgram(0);
-      glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+      backgroundcolor();
       return;
   }
 }
@@ -373,7 +410,7 @@ void arrivee1(int state){
 
       //avant le draw modification de la matrice en question 
       glUseProgram(0);
-      glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+      backgroundcolor();
       return;
   }
 }
@@ -428,7 +465,7 @@ void arrivee2(int state){
 
       //avant le draw modification de la matrice en question 
       glUseProgram(0);
-      glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+      backgroundcolor();
       return;
   }
 }
@@ -484,7 +521,7 @@ void toutdroit(int state){
 
       //avant le draw modification de la matrice en question 
       glUseProgram(0);
-      glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+      backgroundcolor();
       return;
   }
 }
@@ -543,7 +580,7 @@ void viraged(int state){
     gl4duSendMatrices();
     //avant le draw modification de la matrice en question 
     glUseProgram(0);
-    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+    backgroundcolor();
     return;
   }
 }
@@ -601,7 +638,7 @@ void virageg(int state){
     gl4duSendMatrices();
     //avant le draw modification de la matrice en question 
     glUseProgram(0);
-    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+    backgroundcolor();
     return;
   }
 }
@@ -731,6 +768,11 @@ void Roaddraw(float anim_z) {
 
 void Spectredraw(){
   int i, j;
+  // GLfloat r,g,b;
+  // r = (rand()%100)/100;
+  // g = (rand()%100)/100;
+  // b = (rand()%100)/100;
+  // GLfloat * R = &r , *G = &g , *B = &b;
 
   glUseProgram(_pIdSp);
     gl4duBindMatrix("modelView");
@@ -739,6 +781,9 @@ void Spectredraw(){
     gl4duTranslatef(-12.5f, 0.0f, 100.0f);
     gl4duRotatef(90, 0, 1.0f, 0);
     for(i = 0; i < NB_E; ++i) {
+      // glUniform4fv(glGetUniformLocation(_pIdSp, "R"), 1, R);
+      // glUniform4fv(glGetUniformLocation(_pIdSp, "G"), 1, G);
+      // glUniform4fv(glGetUniformLocation(_pIdSp, "B"), 1, B);
       GLfloat x = 500.0f * (i / (NB_E - 1.0f)) - 1.0f;
       gl4duPushMatrix();
       gl4duTranslatef(x, 0.0f, 0.0f);
@@ -746,7 +791,6 @@ void Spectredraw(){
         GLfloat y = (_hauteurs[i] < 0 ? -j : j);
         gl4duPushMatrix();
         gl4duTranslatef(0.0f, y, 0.0f);
-        // gl4duScalef(0.02f, 0.02f, 0.02f);
         gl4duSendMatrices();
         gl4duPopMatrix();
         gl4dgDraw(_cubeId);
@@ -759,6 +803,9 @@ void Spectredraw(){
     gl4duTranslatef(15.0f, 0.0f, 100.0f);
     gl4duRotatef(90, 0, 1.0f, 0);
     for(i = 0; i < NB_E; ++i) {
+      // glUniform4fv(glGetUniformLocation(_pIdSp, "R"), 1, R);
+      // glUniform4fv(glGetUniformLocation(_pIdSp, "G"), 1, G);
+      // glUniform4fv(glGetUniformLocation(_pIdSp, "B"), 1, B);
       GLfloat x = 500.0f * (i / (NB_E - 1.0f)) - 1.0f;
       gl4duPushMatrix();
       gl4duTranslatef(x, 0.0f, 0.0f);
@@ -778,6 +825,11 @@ void Spectredraw(){
 
 void SpectredrawL(){
   int i, j;
+  // GLfloat r,g,b;
+  // r = (rand()%100)/100;
+  // g = (rand()%100)/100;
+  // b = (rand()%100)/100;
+  // GLfloat * R = &r , *G = &g , *B = &b;
 
   glUseProgram(_pIdSp);
     gl4duBindMatrix("modelView");
@@ -786,6 +838,9 @@ void SpectredrawL(){
     gl4duTranslatef(-12.5f, 0.0f, 100.0f);
     gl4duRotatef(90, 0, 1.0f, 0);
     for(i = 0; i < NB_E; ++i) {
+      // glUniform4fv(glGetUniformLocation(_pIdSp, "R"), 1, R);
+      // glUniform4fv(glGetUniformLocation(_pIdSp, "G"), 1, G);
+      // glUniform4fv(glGetUniformLocation(_pIdSp, "B"), 1, B);
       GLfloat x = 500.0f * (i / (NB_E - 1.0f)) - 1.0f;
       gl4duPushMatrix();
       gl4duTranslatef(x, 0.0f, 0.0f);
@@ -804,14 +859,23 @@ void SpectredrawL(){
 
 void SpectredrawR(){
   int i, j;
+  // GLfloat r,g,b;
+  // r = (rand()%100)/100;
+  // g = (rand()%100)/100;
+  // b = (rand()%100)/100;
+  // GLfloat * R = &r , *G = &g , *B = &b;
 
   glUseProgram(_pIdSp);
+
     gl4duBindMatrix("modelView");
     // ligne de droite
     gl4duLoadIdentityf();
     gl4duTranslatef(15.0f, 0.0f, 100.0f);
     gl4duRotatef(90, 0, 1.0f, 0);
     for(i = 0; i < NB_E; ++i) {
+      // glUniform4fv(glGetUniformLocation(_pIdSp, "R"), 1, R);
+      // glUniform4fv(glGetUniformLocation(_pIdSp, "G"), 1, G);
+      // glUniform4fv(glGetUniformLocation(_pIdSp, "B"), 1, B);
       GLfloat x = 500.0f * (i / (NB_E - 1.0f)) - 1.0f;
       gl4duPushMatrix();
       gl4duTranslatef(x, 0.0f, 0.0f);
@@ -934,6 +998,9 @@ void PlayertextDraw(GLuint textId, GLfloat a, GLfloat Position[3]){
   if (textId == _textId_2){
     gl4duRotatef(180.0f, 0, 1, 0);
   }
+  if (textId == _textId_WINNER){
+    gl4duRotatef(190.0f, 0, 1, 0);
+  }
   gl4dgDraw(_quad);
   gl4duSendMatrices();
 
@@ -992,9 +1059,17 @@ static void initText(GLuint * ptId, const char * text) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+void backgroundcolor(void){
+  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void animationsInit(void) {
+  srand(0000);
   initText(&_textId_1, "Player 1");
   initText(&_textId_2, "Player 2");
+  initText(&_textId_WINNER, " VAINQUEUR ");
   initText(&_textId_VS, "Vs");
   initText(&_textId_FINISH, " DEPART ");
 
@@ -1015,7 +1090,7 @@ void animationsInit(void) {
 
   gl4duGenMatrix(GL_FLOAT, "projectionView");
 
-  _model1 = assimpGenScene("texture/Chevrolet_Camaro_SS_Low.obj");
+  _model1 = assimpGenScene("texture/Chevrolet_Camaro_SS_High.obj");
   _model2 = assimpGenScene("texture/bath.obj");
 
   if(!_cubeId)

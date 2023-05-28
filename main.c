@@ -20,7 +20,7 @@ static GL4DHanime _animations[] = {
   { 4500, player1, NULL, NULL },
   { 1500, versus, NULL, NULL },
   { 4500, player2, NULL, NULL },
-  { 3000, depart1, NULL, NULL },
+  { 3500, depart1, NULL, NULL },
   { 2000, depart2, NULL, NULL },
   { 8000, toutdroit, NULL, NULL },
   { 8000, viraged, NULL, NULL },
@@ -28,7 +28,7 @@ static GL4DHanime _animations[] = {
   { 8000, virageg, NULL, NULL },
   { 10000, arrivee1, NULL, NULL },
   { 2000, arrivee2, NULL, NULL },
-  { 6000, player2, NULL, NULL },
+  { 6000, pd, NULL, NULL },
   {    0, NULL, NULL, NULL } /* Toujours laisser à la fin */
 };
 

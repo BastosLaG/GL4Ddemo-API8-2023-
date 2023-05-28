@@ -1,7 +1,0 @@
-A ajouter:
-
--1 : Une ligne d'arriver et une ligne de départ
-
--2 : Un audio visualiser sur les cotés pour rajouter des "immeubles et décors au bords de la route"
-
-

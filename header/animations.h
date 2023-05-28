@@ -36,6 +36,7 @@ extern "C" {
   extern void virageg(int state);
   extern void arrivee1(int state);
   extern void arrivee2(int state);
+  extern void pd(int state);
   extern void animationsInit(void);
     
 #ifdef __cplusplus
