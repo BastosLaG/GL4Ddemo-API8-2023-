@@ -56,6 +56,8 @@ static GLfloat lum[4] = {0.0, 10.0, 0.0, 1.0};
 void DepArr(float z, float x);
 void Roaddraw(float anim_z);
 void Spectredraw();
+void SpectredrawL();
+void SpectredrawR();
 void podiumDraw(void);
 void gestion_voiture(void);
 void gestion_model2(void);
@@ -526,7 +528,7 @@ void viraged(int state){
     assimpDrawScene(_model2);
     gl4duSendMatrices();
 
-    Spectredraw();
+    SpectredrawR();
 
     Roaddraw(a*0.5);
     gl4duSendMatrices();
@@ -585,7 +587,7 @@ void virageg(int state){
     assimpDrawScene(_model2);
     gl4duSendMatrices();
 
-    Spectredraw();
+    SpectredrawL();
 
     Roaddraw(a*0.5);
     gl4duSendMatrices();
@@ -752,6 +754,59 @@ void Spectredraw(){
       gl4duPopMatrix();
     }
 
+    // ligne de droite
+    gl4duLoadIdentityf();
+    gl4duTranslatef(15.0f, 0.0f, 100.0f);
+    gl4duRotatef(90, 0, 1.0f, 0);
+    for(i = 0; i < NB_E; ++i) {
+      GLfloat x = 500.0f * (i / (NB_E - 1.0f)) - 1.0f;
+      gl4duPushMatrix();
+      gl4duTranslatef(x, 0.0f, 0.0f);
+      for(j = 0; j <= abs(_hauteurs[i]); ++j) {
+        GLfloat y = (_hauteurs[i] < 0 ? -j : j);
+        gl4duPushMatrix();
+        gl4duTranslatef(0.0f, y, 0.0f);
+        // gl4duScalef(0.02f, 0.02f, 0.02f);
+        gl4duSendMatrices();
+        gl4duPopMatrix();
+        gl4dgDraw(_cubeId);
+      }
+      gl4duPopMatrix();
+    }
+    
+} 
+
+void SpectredrawL(){
+  int i, j;
+
+  glUseProgram(_pIdSp);
+    gl4duBindMatrix("modelView");
+    // ligne de gauche 
+    gl4duLoadIdentityf();
+    gl4duTranslatef(-12.5f, 0.0f, 100.0f);
+    gl4duRotatef(90, 0, 1.0f, 0);
+    for(i = 0; i < NB_E; ++i) {
+      GLfloat x = 500.0f * (i / (NB_E - 1.0f)) - 1.0f;
+      gl4duPushMatrix();
+      gl4duTranslatef(x, 0.0f, 0.0f);
+      for(j = 0; j <= abs(_hauteurs[i]); ++j) {
+        GLfloat y = (_hauteurs[i] < 0 ? -j : j);
+        gl4duPushMatrix();
+        gl4duTranslatef(0.0f, y, 0.0f);
+        // gl4duScalef(0.02f, 0.02f, 0.02f);
+        gl4duSendMatrices();
+        gl4duPopMatrix();
+        gl4dgDraw(_cubeId);
+      }
+      gl4duPopMatrix();
+    }
+} 
+
+void SpectredrawR(){
+  int i, j;
+
+  glUseProgram(_pIdSp);
+    gl4duBindMatrix("modelView");
     // ligne de droite
     gl4duLoadIdentityf();
     gl4duTranslatef(15.0f, 0.0f, 100.0f);
