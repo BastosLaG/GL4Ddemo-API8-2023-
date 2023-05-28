@@ -28,7 +28,7 @@ static GL4DHanime _animations[] = {
   { 8000, virageg, NULL, NULL },
   { 10000, arrivee1, NULL, NULL },
   { 2000, arrivee2, NULL, NULL },
-  { 4500, player2, NULL, NULL },
+  { 6000, player2, NULL, NULL },
   {    0, NULL, NULL, NULL } /* Toujours laisser à la fin */
 };
 
